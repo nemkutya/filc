@@ -53,3 +53,6 @@ thoughts
 .opencode
 .codegraph
 graphify-out/
+compose.yml
+apps/chronos/.env.example
+apps/iris/.env.example

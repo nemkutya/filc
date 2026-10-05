@@ -61,9 +61,9 @@ services:
       - "127.0.0.1:3901:3901" # cluster RPC
       - "127.0.0.1:3903:3903" # admin/metrics API
     environment:
-      GARAGE_DEFAULT_ACCESS_KEY: ${GARAGE_DEFAULT_ACCESS_KEY:?set me}
-      GARAGE_DEFAULT_SECRET_KEY: ${GARAGE_DEFAULT_SECRET_KEY:?set me}
-      GARAGE_DEFAULT_BUCKET: ${GARAGE_DEFAULT_BUCKET:-filc-dev}
+      GARAGE_DEFAULT_ACCESS_KEY: garageaccesskey123
+      GARAGE_DEFAULT_SECRET_KEY: garagesecretkey123456789
+      GARAGE_DEFAULT_BUCKET: filc-dev
     volumes:
       - ./garage.toml:/etc/garage.toml:ro
       - garage-data:/var/lib/garage/data
