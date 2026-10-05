@@ -4,6 +4,7 @@ import {
   deleteAnnouncement,
   deleteAnnouncementImage,
   getAnnouncement,
+  getAnnouncementImage,
   listAnnouncements,
   updateAnnouncement,
   uploadAnnouncementImage,
@@ -31,6 +32,7 @@ const announcementsRouter = newsFactory
   .createApp()
   .get('/', ...listAnnouncements)
   .get('/:id', ...getAnnouncement)
+  .get('/:id/image', ...getAnnouncementImage)
   .post('/:id/image', ...uploadAnnouncementImage)
   .delete('/:id/image', ...deleteAnnouncementImage)
   .post('/', ...createAnnouncement)

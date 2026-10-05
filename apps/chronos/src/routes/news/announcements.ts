@@ -43,6 +43,7 @@ import { filcExt } from '#utils/openapi';
 import {
   announcementImageKey,
   deleteObject,
+  getObjectFile,
   isObjectStorageConfigured,
   putObject,
 } from '#utils/storage/s3';
@@ -556,6 +557,53 @@ export const deleteAnnouncement = newsFactory.createHandlers(
     cancelPendingNotification(id, 'announcement');
 
     return ok(c, undefined);
+  }
+);
+
+export const getAnnouncementImage = newsFactory.createHandlers(
+  describeRoute({
+    ...filcExt('Announcement', '@unit AnnouncementImage', true),
+    description: 'Get the image attached to an announcement',
+    responses: {
+      200: {
+        content: {
+          'image/*': {
+            schema: { format: 'binary', type: 'string' },
+          },
+        },
+        description: 'Announcement image',
+      },
+      404: { description: 'Image not found' },
+      503: { description: 'Object storage is not configured' },
+    },
+    tags: ['News / Announcements'],
+  }),
+  zValidator('param', z.object({ id: z.string().uuid() })),
+  async (c) => {
+    const { id } = c.req.valid('param');
+
+    const [item] = await db
+      .select({
+        imageContentType: announcement.imageContentType,
+        imageKey: announcement.imageKey,
+      })
+      .from(announcement)
+      .where(eq(announcement.id, id));
+
+    if (!(item?.imageKey && item.imageContentType)) {
+      throw notFound('Image not found');
+    }
+
+    if (!isObjectStorageConfigured()) {
+      throw new ApiHttpError(StatusCodes.SERVICE_UNAVAILABLE, {
+        message: 'Object storage is not configured',
+      });
+    }
+
+    return c.body(getObjectFile(item.imageKey).stream(), StatusCodes.OK, {
+      'Cache-Control': 'public, max-age=86400',
+      'Content-Type': item.imageContentType,
+    });
   }
 );
 
